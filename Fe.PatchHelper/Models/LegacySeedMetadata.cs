@@ -1,12 +1,12 @@
-using System.Text.Json.Nodes;
+using System;
 using System.Text.Json.Serialization;
 
 namespace Fe.PatchHelper.Models;
 
-public class SeedMetadata
+public class LegacySeedMetadata
 {
     [JsonPropertyName("version")]
-    public string Version { get; init; } = string.Empty;
+    public int[] Version { get; init; } = [];
 
     [JsonPropertyName("flags")]
     public string Flags { get; init; } = string.Empty;
@@ -20,11 +20,18 @@ public class SeedMetadata
     [JsonPropertyName("verification")]
     public List<string> Verification { get; init; } = [];
 
-    /// <summary>
-    /// will be empty for seeds before 5.0. In theory I should do better for 5.0, but also not a thing for this project.
-    /// </summary>
-    [JsonPropertyName("objectives")]
-    public List<JsonObject> Objectives { get; init; } = [];
+
+    public SeedMetadata ToSeedMetadata()
+    {
+        return new SeedMetadata
+        {
+            Flags = this.Flags,
+            BinaryFlags = this.BinaryFlags,
+            Seed = this.Seed,
+            Verification = this.Verification,
+            Version = $"v{string.Join('.', Version)}"
+        };
+    }
 
     public override string ToString()
     {
@@ -32,8 +39,6 @@ public class SeedMetadata
     version: {Version}
     flags: {Flags}
     binary flags: {BinaryFlags}
-    seed: {Seed}
-    verification: {string.Join(", ", Verification)}";
-
+    seed: {Seed}";
     }
 }

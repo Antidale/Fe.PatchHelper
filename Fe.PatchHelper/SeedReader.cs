@@ -6,11 +6,18 @@ namespace Fe.PatchHelper;
 
 public class SeedReader
 {
-    public static SeedMetadata? GetSeedMetadata(string filePath)
+    public static bool TryGetSeedMetadata(string filePath, out SeedMetadata seedMetadata)
     {
+        seedMetadata = new();
+
+        if (!filePath.EndsWith(".smc") && !filePath.EndsWith(".sfc"))
+        {
+            return false;
+        }
+
         if (!File.Exists(filePath))
         {
-            return null;
+            return false;
         }
 
         try
@@ -22,14 +29,23 @@ public class SeedReader
 
             var jsonbDocBytes = br.ReadBytes(docLength);
             var jsonDocString = Encoding.UTF8.GetString(jsonbDocBytes);
-            var seedMetadata = JsonSerializer.Deserialize<SeedMetadata>(jsonDocString);
 
-            return seedMetadata;
+            try
+            {
+                seedMetadata = JsonSerializer.Deserialize<SeedMetadata>(jsonDocString) ?? seedMetadata;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                seedMetadata = JsonSerializer.Deserialize<LegacySeedMetadata>(jsonDocString)?.ToSeedMetadata() ?? seedMetadata;
+            }
+
+            return seedMetadata.ToString() != new SeedMetadata().ToString();
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            return null;
+            return false;
         }
     }
 }
