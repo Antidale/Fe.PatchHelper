@@ -1,8 +1,11 @@
 ﻿
-using Fe.PatchHelper;
+using Fe.PatchHelper.Commands;
+using Spectre.Console.Cli;
 
 
-
-var success = SeedReader.TryGetSeedMetadata("testPath", out var jsonDoc);
-
-Console.WriteLine(success ? jsonDoc.ToString() : "failed to read metadata");
+var app = new CommandApp();
+app.Configure(config =>
+{
+    config.AddCommand<GetFileMetadataCommand>("file");
+});
+return await app.RunAsync(args);
