@@ -6,6 +6,7 @@ namespace Fe.PatchHelper;
 
 public class SeedReader
 {
+
     public static bool TryGetSeedMetadata(string filePath, out SeedMetadata seedMetadata)
     {
         seedMetadata = new();
@@ -38,6 +39,26 @@ public class SeedReader
             {
                 Console.WriteLine(ex.Message);
                 seedMetadata = JsonSerializer.Deserialize<LegacySeedMetadata>(jsonDocString)?.ToSeedMetadata() ?? seedMetadata;
+            }
+
+            if (seedMetadata.Verification.Count == 0)
+            {
+                br.BaseStream.Seek(0x007FDE, SeekOrigin.Begin);
+                var first = br.ReadByte();
+                var second = br.ReadByte();
+                var byteArray = new List<ushort>(capacity: (int)br.BaseStream.Length);
+
+                var romChecksum = first | (second << 8);
+
+                var iconNames = Enumerable.Range(0, 4)
+                                     .Select(iterator => (romChecksum >> (iterator * 4)) & 0xf)
+                                     .Select(nibble => Data.ChecksumTiles[nibble])
+                                     .ToList();
+
+                if (!iconNames.Any(x => string.IsNullOrWhiteSpace(x)))
+                {
+                    seedMetadata.Verification = iconNames;
+                }
             }
 
             return seedMetadata.ToString() != new SeedMetadata().ToString();
