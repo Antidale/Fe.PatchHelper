@@ -18,7 +18,9 @@ public class SeedMetadata
     public string BinaryFlags { get; init; } = string.Empty;
 
     [JsonPropertyName("verification")]
-    public List<string> Verification { get; init; } = [];
+    public List<string> Verification { get; set; } = [];
+
+    public string VerificationString => string.Join(", ", Verification);
 
     /// <summary>
     /// will be empty for seeds before 5.0. In theory I should do better for 5.0, but also not a thing for this project.
@@ -33,7 +35,6 @@ public class SeedMetadata
     flags: {Flags}
     binary flags: {BinaryFlags}
     seed: {Seed}
-    verification: {string.Join(", ", Verification)}";
-
+    verification: {VerificationString}";
     }
 }
