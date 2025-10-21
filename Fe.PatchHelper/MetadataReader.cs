@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using Fe.PatchHelper.Extensions;
 using Fe.PatchHelper.Models;
 
 namespace Fe.PatchHelper;
@@ -11,15 +12,7 @@ public class MetadataReader
     {
         seedMetadata = new();
 
-        if (!filePath.EndsWith(".smc") && !filePath.EndsWith(".sfc"))
-        {
-            return false;
-        }
-
-        if (!File.Exists(filePath))
-        {
-            return false;
-        }
+        if (!filePath.IsVaildFeFile()) return false;
 
         try
         {
