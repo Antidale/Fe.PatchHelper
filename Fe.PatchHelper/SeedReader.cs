@@ -28,6 +28,8 @@ public class SeedReader
             br.BaseStream.Seek(0x1FF000, SeekOrigin.Begin);
             var docLength = BitConverter.ToInt32(br.ReadBytes(4));
 
+            if (docLength <= 0)
+                return false;
             var jsonbDocBytes = br.ReadBytes(docLength);
             var jsonDocString = Encoding.UTF8.GetString(jsonbDocBytes);
 
@@ -39,6 +41,11 @@ public class SeedReader
             {
                 Console.WriteLine(ex.Message);
                 seedMetadata = JsonSerializer.Deserialize<LegacySeedMetadata>(jsonDocString)?.ToSeedMetadata() ?? seedMetadata;
+            }
+
+            if (seedMetadata.Flags == string.Empty)
+            {
+                return false;
             }
 
             if (seedMetadata.Verification.Count == 0)
@@ -65,7 +72,7 @@ public class SeedReader
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.StackTrace);
             return false;
         }
     }
