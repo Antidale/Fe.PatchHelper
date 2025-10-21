@@ -4,7 +4,7 @@ using Fe.PatchHelper.Models;
 
 namespace Fe.PatchHelper;
 
-public class SeedReader
+public class MetadataReader
 {
 
     public static bool TryGetSeedMetadata(string filePath, out SeedMetadata seedMetadata)

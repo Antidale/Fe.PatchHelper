@@ -17,7 +17,7 @@ public class GetFileMetadataCommand : Command<GetFileMetadataCommand.Settings>
 
     public override int Execute(CommandContext context, [NotNull] Settings settings)
     {
-        AnsiConsole.WriteLine(SeedReader.TryGetSeedMetadata(settings.FilePath, out var seedMetadata)
+        AnsiConsole.WriteLine(MetadataReader.TryGetSeedMetadata(settings.FilePath, out var seedMetadata)
             ? seedMetadata.ToString()
             : $"Could not parse metadata for {settings.FilePath}");
 
