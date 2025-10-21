@@ -17,7 +17,5 @@ public class CreatePatchCommand : Command<CreatePatchCommand.Settings>
     public override int Execute(CommandContext context, [NotNull] Settings settings)
     {
         return 0;
-        throw new NotImplementedException();
-        return 0;
     }
 }
