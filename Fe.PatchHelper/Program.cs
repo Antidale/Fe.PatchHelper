@@ -6,6 +6,7 @@ using Spectre.Console.Cli;
 var app = new CommandApp();
 app.Configure(config =>
 {
-    config.AddCommand<GetFileMetadataCommand>("file");
+    config.AddCommand<GetFileMetadataCommand>("metadata");
+    config.AddCommand<CreatePatchCommand>("create-patch");
 });
 return await app.RunAsync(args);
