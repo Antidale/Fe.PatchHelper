@@ -1,4 +1,3 @@
-using System;
 using Fe.PatchHelper.Models;
 
 namespace Fe.PatchHelper;
@@ -8,9 +7,7 @@ public class HtmlTemplate
     public static string BaseTemplate(SeedMetadata metadata, string patchString) => $$"""
 <html>
 <head>
-    <title>FF4FE: Orandom:7,tough_quest/req:7/win:crystal Kmain/summon/moon Pkey
-        Cstandard/nofree/restrict:cecil,fusoya/j:abilities/nekkie Twildish/maxtier:7 Sstandard Bstandard/alt:gauntlet
-        Etoggle Glife/sylph/backrow -kit:better -spoon / {{metadata.Seed}}</title>
+    <title>FF4FE: {{metadata.Flags}} / {{metadata.Seed}}</title>
     <link rel="stylesheet" href="https://info.tellah.life/seeds/seed.css">
 </head>
 
@@ -19,9 +16,7 @@ public class HtmlTemplate
         <div id="heading">
             <div class="label">Flags:</div>
             <div id="flags">
-
-                <a href="{{metadata.BinaryFlags}}" target="_blank">{{metadata.Flags}}</a>
-
+                <div>{{metadata.Flags}}</div>
             </div>
             <div class="label">Seed:</div>
             <div id="seed">{{metadata.Seed}}</div>
@@ -58,18 +53,7 @@ public class HtmlTemplate
     </div>
 
     <div id="credit">
-        BPS patch creation and application code by <a href="https://github.com/Alcaro" target="_blank">Alcaro</a>.
-    </div>
-
-    <div id="flag_info_container" onclick="hideFlagInfo();">
-        <div id="flag_info" onclick="event.stopPropagation();">
-            <div id="flag_info_buttons">
-                <div>
-                    <input type="checkbox" id="showDisabledFlags" onchange="toggleDisabledFlags();">
-                    <label for="showDisabledFlags">Show disabled flags</label>
-                </div>
-            </div>
-        </div>
+        BPS patch creation and application code by <a href="https://github.com/Alcaro" target="_blank">Alcaro</a>. This patch page has be recreated from the pached FE ROM.
     </div>
 
     <script>
@@ -106,8 +90,6 @@ public class HtmlTemplate
             loadBpsPatchData();
             download(bpsBytes, "FF4FE.{{metadata.BinaryFlags}}.{{metadata.Seed}}.bps", "application/octet-stream");
         }
-
-
 
         function handleRomFileChanged() {
             updateFileControls();
