@@ -30,7 +30,10 @@ public class HtmlTemplate
             <div class="label">Check:</div>
             <div>
                 <div id="checksum-container">
-                    Edit me!
+                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{metadata.Verification.First()}}.png" alt="${{metadata.Verification.First()}}" title="${{metadata.Verification.First()}}">
+                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{metadata.Verification.Skip(1).First()}}.png" alt="${{metadata.Verification.Skip(1).First()}}" title="${{metadata.Verification.Skip(1).First()}}">
+                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{metadata.Verification.Skip(2).First()}}.png" alt="${{metadata.Verification.Skip(2).First()}}" title="${{metadata.Verification.Skip(2).First()}}">
+                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{metadata.Verification.Skip(3).First()}}.png" alt="${{metadata.Verification.Skip(3).First()}}" title="${{metadata.Verification.Skip(3).First()}}">
                 </div>
             </div>
         </div>
