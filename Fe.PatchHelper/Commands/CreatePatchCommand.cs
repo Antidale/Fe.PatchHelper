@@ -19,8 +19,8 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
         public string? FlipsPath { get; set; }
 
         [Description("Path to the base FF2 1.1 US ROM")]
-        [CommandOption("-r|--rom-path")]
-        public string? RomPath { get; set; }
+        [CommandOption("-b|--base-rom-path")]
+        public string? BaseRomPath { get; set; }
     }
 
     public async override Task<int> ExecuteAsync(CommandContext context, [NotNull] Settings settings)
@@ -35,7 +35,7 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
             return -1;
         }
 
-        var romPath = string.IsNullOrEmpty(settings.RomPath)
+        var romPath = string.IsNullOrEmpty(settings.BaseRomPath)
             ? Path.Join(romFolder, "ff4.rom.smc")
             : settings.FlipsPath;
 
