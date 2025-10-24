@@ -9,6 +9,7 @@ public class HtmlTemplate
 <head>
     <title>FF4FE: {{metadata.Flags}} / {{metadata.Seed}}</title>
     <link rel="stylesheet" href="https://info.tellah.life/seeds/seed.css">
+    <link rel="shortcut icon" href="https://info.tellah.life/favicon.ico">
 </head>
 
 <body>
@@ -53,7 +54,7 @@ public class HtmlTemplate
     </div>
 
     <div id="credit">
-        BPS patch creation and application code by <a href="https://github.com/Alcaro" target="_blank">Alcaro</a>. This patch page has be recreated from the pached FE ROM.
+        BPS patch creation and application code by <a href="https://github.com/Alcaro" target="_blank">Alcaro</a>. This patch page has been recreated from the pached FE ROM.
     </div>
 
     <script>
