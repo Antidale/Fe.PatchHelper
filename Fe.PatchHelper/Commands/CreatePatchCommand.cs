@@ -10,7 +10,7 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
 {
     public class Settings : CommandSettings
     {
-        [Description("path, including file name, to the file you want to recreate a patch page from")]
+        [Description("path, including file name, to the file you want to recreate a patch page from. Can also be a directory containing files. Use -r to include subdirectories")]
         [CommandArgument(0, "<filePath>")]
         public required string FilePath { get; init; }
 
@@ -22,7 +22,7 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
         [CommandOption("-b|--base-rom-path")]
         public string? BaseRomPath { get; set; }
 
-        [Description("Recursively search directory")]
+        [Description("Include subdirectories. Only effective if you pass in a directory for the FilePath")]
         [CommandOption("-r|--recursive")]
         [DefaultValue(false)]
         public bool RecursiveSearch { get; set; }
@@ -44,14 +44,20 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
             ? Path.Join(romFolder, "ff4.rom.smc")
             : settings.FlipsPath;
 
-        //TODO: Start handling file path vs directory path here
         if (string.IsNullOrEmpty(romPath) || !romPath.IsValidFile())
         {
             AnsiConsole.WriteLine("Must point to a valid base ROM file");
             return -1;
         }
 
-        //TODO: START should separe out this code to be called in a loop
+        //TODO: START handling file path vs directory path here
+        /*
+            TODO: 
+            handle directory validation
+            handle getting .smc and .sfc files (Directory.EnumerateFiles(path, pattern, enumerationOptions), one for each of *.smc and *.sfc)
+            set up progress bar
+            loop over those files, collecting success/failure for each, incrementing progress bar
+        */
         if (!MetadataReader.TryGetSeedMetadata(settings.FilePath, out var metadata))
         {
             AnsiConsole.WriteLine($"Failed to get metadata for {settings.FilePath}");
@@ -82,7 +88,7 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
             AnsiConsole.WriteException(ex);
         }
 
-        ////TODO: END should separe out this code to be called in a loop
+        ////TODO: END handling file path vs directory path here
         return 0;
     }
 }
