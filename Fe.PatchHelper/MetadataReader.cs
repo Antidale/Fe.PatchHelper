@@ -21,8 +21,8 @@ public class MetadataReader
             br.BaseStream.Seek(0x1FF000, SeekOrigin.Begin);
             var docLength = BitConverter.ToInt32(br.ReadBytes(4));
 
-            if (docLength <= 0)
-                return false;
+            if (docLength <= 0) { return false; }
+
             var jsonbDocBytes = br.ReadBytes(docLength);
             var jsonDocString = Encoding.UTF8.GetString(jsonbDocBytes);
 

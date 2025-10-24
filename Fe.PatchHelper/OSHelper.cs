@@ -19,7 +19,12 @@ public static class OSHelper
         return flipsName;
     }
 
-    public static string GetConfiguredFlipsPath()
+    public static string GetConfiguredFlipsPath(string? userProvidedPath) =>
+        string.IsNullOrEmpty(userProvidedPath)
+            ? GetConfiguredFlipsPath()
+            : userProvidedPath;
+
+    private static string GetConfiguredFlipsPath()
     {
         var flipsName = GetExpectedFlipsName();
         var configuredPath = Environment.GetEnvironmentVariable("FLIPS_PATH");
