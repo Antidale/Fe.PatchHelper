@@ -21,6 +21,11 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
         [Description("Path to the base FF2 1.1 US ROM")]
         [CommandOption("-b|--base-rom-path")]
         public string? BaseRomPath { get; set; }
+
+        [Description("Recursively search directory")]
+        [CommandOption("-r|--recursive")]
+        [DefaultValue(false)]
+        public bool RecursiveSearch { get; set; }
     }
 
     public async override Task<int> ExecuteAsync(CommandContext context, [NotNull] Settings settings)
@@ -39,12 +44,14 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
             ? Path.Join(romFolder, "ff4.rom.smc")
             : settings.FlipsPath;
 
+        //TODO: Start handling file path vs directory path here
         if (string.IsNullOrEmpty(romPath) || !romPath.IsValidFile())
         {
             AnsiConsole.WriteLine("Must point to a valid base ROM file");
             return -1;
         }
 
+        //TODO: START should separe out this code to be called in a loop
         if (!MetadataReader.TryGetSeedMetadata(settings.FilePath, out var metadata))
         {
             AnsiConsole.WriteLine($"Failed to get metadata for {settings.FilePath}");
@@ -74,6 +81,8 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
         {
             AnsiConsole.WriteException(ex);
         }
+
+        ////TODO: END should separe out this code to be called in a loop
         return 0;
     }
 }
