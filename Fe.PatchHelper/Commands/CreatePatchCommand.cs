@@ -1,14 +1,12 @@
-using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using Fe.PatchHelper.Extensions;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace Fe.PatchHelper.Commands;
 
-public class CreatePatchCommand : Command<CreatePatchCommand.Settings>
+public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
 {
     public class Settings : CommandSettings
     {
@@ -25,32 +23,57 @@ public class CreatePatchCommand : Command<CreatePatchCommand.Settings>
         public string? RomPath { get; set; }
     }
 
-    public override int Execute(CommandContext context, [NotNull] Settings settings)
+    public async override Task<int> ExecuteAsync(CommandContext context, [NotNull] Settings settings)
     {
-        var eRP = Environment.GetEnvironmentVariable("FE_ROM_PATH");
+        var romFolder = Environment.GetEnvironmentVariable("FE_ROM_PATH");
 
-        var fp = string.IsNullOrEmpty(settings.FlipsPath)
-            ? OSHelper.GetConfiguredFlipsPath()
-            : settings.FlipsPath;
+        var flipsPath = OSHelper.GetConfiguredFlipsPath(settings.FlipsPath);
 
-        if (!fp.IsValidFile())
+        if (!flipsPath.IsValidFile())
         {
             AnsiConsole.WriteLine("Must point to a valid Flips file");
             return -1;
         }
 
-        var rp = string.IsNullOrEmpty(settings.RomPath)
-            ? Path.Join(eRP, "ff4.rom.smc")
+        var romPath = string.IsNullOrEmpty(settings.RomPath)
+            ? Path.Join(romFolder, "ff4.rom.smc")
             : settings.FlipsPath;
 
-        if (!rp.IsValidFile())
+        if (string.IsNullOrEmpty(romPath) || !romPath.IsValidFile())
         {
             AnsiConsole.WriteLine("Must point to a valid base ROM file");
             return -1;
         }
 
-        AnsiConsole.WriteLine($"Flips: {fp}");
-        AnsiConsole.WriteLine($"ROM: {rp}");
+        if (!MetadataReader.TryGetSeedMetadata(settings.FilePath, out var metadata))
+        {
+            AnsiConsole.WriteLine($"Failed to get metadata for {settings.FilePath}");
+            return -1;
+        }
+
+        if (metadata is null) { return -1; }
+
+        var patchfile = await FlipsHelper.CreateBpsPatchAsync(settings.FilePath, romPath, flipsPath);
+
+        if (!patchfile.IsValidFile())
+        {
+            AnsiConsole.WriteLine($"Failed to create patch for {settings.FilePath}");
+            return -1;
+        }
+
+        var patchData = await File.ReadAllBytesAsync(patchfile);
+        var patchString = Convert.ToBase64String(patchData);
+
+        var patchPage = HtmlTemplate.BaseTemplate(metadata, patchString);
+        await File.WriteAllTextAsync($"{settings.FilePath}.html", patchPage);
+        try
+        {
+            File.Delete(patchfile);
+        }
+        catch (Exception ex)
+        {
+            AnsiConsole.WriteException(ex);
+        }
         return 0;
     }
 }

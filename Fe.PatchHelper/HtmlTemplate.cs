@@ -5,11 +5,9 @@ namespace Fe.PatchHelper;
 
 public class HtmlTemplate
 {
-    public static string BaseTemplate(LegacySeedMetadata metadata, string patchString) => $$"""
+    public static string BaseTemplate(SeedMetadata metadata, string patchString) => $$"""
 <html>
-
 <head>
-
     <title>FF4FE: Orandom:7,tough_quest/req:7/win:crystal Kmain/summon/moon Pkey
         Cstandard/nofree/restrict:cecil,fusoya/j:abilities/nekkie Twildish/maxtier:7 Sstandard Bstandard/alt:gauntlet
         Etoggle Glife/sylph/backrow -kit:better -spoon / {{metadata.Seed}}</title>
@@ -22,8 +20,7 @@ public class HtmlTemplate
             <div class="label">Flags:</div>
             <div id="flags">
 
-                <a href="{{metadata.BinaryFlags}}"
-                    target="_blank">{{metadata.Flags}}</a>
+                <a href="{{metadata.BinaryFlags}}" target="_blank">{{metadata.Flags}}</a>
 
             </div>
             <div class="label">Seed:</div>
@@ -36,9 +33,8 @@ public class HtmlTemplate
                     Edit me!
                 </div>
             </div>
-
-
         </div>
+
         <div id="patch">
             <div id="patch_header">Please provide an uncompressed ROM of Final Fantasy II US v1.1:</div>
             <div id="file_section">
@@ -54,9 +50,7 @@ public class HtmlTemplate
         <div id="share">
             This seed can be shared by saving and distributing <a href=""
                 download="FF4FE.{{metadata.BinaryFlags}}.{{metadata.Seed}}.html">this HTML file</a>, or by
-            sharing this <a href="javascript:;" onclick="downloadBpsPatch();">BPS patch</a>. It can also be shared via
-            <a href="https://ff4fe.com/get?id={{metadata.BinaryFlags}}.{{metadata.Seed}}">this link</a>,
-            though be aware that the link will expire if not accessed for some time.
+            sharing this <a href="javascript:;" onclick="downloadBpsPatch();">BPS patch</a>.
         </div>
     </div>
 
@@ -70,10 +64,6 @@ public class HtmlTemplate
                 <div>
                     <input type="checkbox" id="showDisabledFlags" onchange="toggleDisabledFlags();">
                     <label for="showDisabledFlags">Show disabled flags</label>
-                </div>
-                <div>
-                    <a href="https://ff4fe.com/make?flags={{metadata.BinaryFlags}}"
-                        target="_blank">Make new seed with these flags</a>
                 </div>
             </div>
         </div>
@@ -401,10 +391,7 @@ public class HtmlTemplate
 
         var RAW_PATCH = "{{patchString}}";
     </script>
-
 </body>
-
 </html>
-
 """;
 }
