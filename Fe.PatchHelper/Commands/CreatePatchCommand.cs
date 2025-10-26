@@ -46,53 +46,72 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
             return -1;
         }
 
-
-
         if (File.Exists(settings.FilePath))
         {
-            //process single file
+            var response = await TryCreatePatchPageAsync(settings.FilePath, flipsPath, romPath);
+            if (string.IsNullOrEmpty(response)) { return 0; }
+            else { AnsiConsole.WriteLine(response); return 1; }
         }
         else if (Directory.Exists(settings.FilePath))
         {
-            //get the files and process them, handle getting subirectories, too.
-            //probalby also either set up a progress bar, or note file completion in some way
-            //also note any files that were not FE files?
+
+            var possibleFiles = Directory.EnumerateFiles(settings.FilePath, "*.smc").Concat(Directory.EnumerateFiles(settings.FilePath, "*.sfc"));
+            var progressIncrement = (double)100 / (double)possibleFiles.Count();
+            var failedFilePaths = new List<string>();
+            await AnsiConsole.Progress().StartAsync(async ctx =>
+            {
+                var filesTask = ctx.AddTask("[green]Processing files[/]");
+                foreach (var file in possibleFiles)
+                {
+                    var response = await TryCreatePatchPageAsync(file, flipsPath, romPath);
+                    if (!string.IsNullOrWhiteSpace(response))
+                    {
+                        failedFilePaths.Add(file);
+                    }
+                    filesTask.Increment(progressIncrement);
+                }
+            });
+
+            if (failedFilePaths.Count != 0)
+            {
+                AnsiConsole.WriteLine("Couldn't create a patch page for these files:");
+                failedFilePaths.ForEach(path => AnsiConsole.WriteLine(path));
+            }
+            else
+            {
+                AnsiConsole.WriteLine("All patch pages processed successfully!");
+            }
+
+            return 0;
         }
         else
         {
             AnsiConsole.WriteLine("Must provide a path to a specific FE rom, or a directory containing them");
             return -1;
         }
+    }
 
-        //TODO: START handling file path vs directory path here
-        /*
-            TODO: 
-            handle directory validation
-            handle getting .smc and .sfc files (Directory.EnumerateFiles(path, pattern, enumerationOptions), one for each of *.smc and *.sfc)
-            set up progress bar
-            loop over those files, collecting success/failure for each, incrementing progress bar
-        */
-        if (!MetadataReader.TryGetSeedMetadata(settings.FilePath, out var metadata))
+    private async Task<string> TryCreatePatchPageAsync(string filePath, string flipsPath, string romPath)
+    {
+        if (!MetadataReader.TryGetSeedMetadata(filePath, out var metadata))
         {
-            AnsiConsole.WriteLine($"Failed to get metadata for {settings.FilePath}");
-            return -1;
+            return $"Failed to get metadata for {filePath}";
         }
 
-        if (metadata is null) { return -1; }
+        if (metadata is null) { return $"Failed to get metadata for {filePath}"; }
 
-        var patchfile = await FlipsHelper.CreateBpsPatchAsync(settings.FilePath, romPath, flipsPath);
+        var patchfile = await FlipsHelper.CreateBpsPatchAsync(filePath, romPath, flipsPath);
 
         if (!patchfile.IsValidFile())
         {
-            AnsiConsole.WriteLine($"Failed to create patch for {settings.FilePath}");
-            return -1;
+            return $"Failed to create patch for {filePath}";
         }
 
         var patchData = await File.ReadAllBytesAsync(patchfile);
         var patchString = Convert.ToBase64String(patchData);
 
         var patchPage = HtmlTemplate.BaseTemplate(metadata, patchString);
-        await File.WriteAllTextAsync($"{settings.FilePath}.html", patchPage);
+        await File.WriteAllTextAsync($"{filePath}.html", patchPage);
         try
         {
             File.Delete(patchfile);
@@ -102,7 +121,6 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
             AnsiConsole.WriteException(ex);
         }
 
-        ////TODO: END handling file path vs directory path here
-        return 0;
+        return string.Empty;
     }
 }
