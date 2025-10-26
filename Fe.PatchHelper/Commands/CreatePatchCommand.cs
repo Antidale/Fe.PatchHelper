@@ -54,8 +54,11 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
         }
         else if (Directory.Exists(settings.FilePath))
         {
-
-            var possibleFiles = Directory.EnumerateFiles(settings.FilePath, "*.smc").Concat(Directory.EnumerateFiles(settings.FilePath, "*.sfc"));
+            var enumerationOptions = new EnumerationOptions
+            {
+                RecurseSubdirectories = settings.RecursiveSearch
+            };
+            var possibleFiles = Directory.EnumerateFiles(settings.FilePath, "*.smc", enumerationOptions).Concat(Directory.EnumerateFiles(settings.FilePath, "*.sfc", enumerationOptions));
             var progressIncrement = (double)100 / (double)possibleFiles.Count();
             var failedFilePaths = new List<string>();
             await AnsiConsole.Progress().StartAsync(async ctx =>
@@ -91,7 +94,7 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
         }
     }
 
-    private async Task<string> TryCreatePatchPageAsync(string filePath, string flipsPath, string romPath)
+    private static async Task<string> TryCreatePatchPageAsync(string filePath, string flipsPath, string romPath)
     {
         if (!MetadataReader.TryGetSeedMetadata(filePath, out var metadata))
         {

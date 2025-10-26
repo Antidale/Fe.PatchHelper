@@ -56,16 +56,19 @@ public class MetadataReader
                 {
                     seedMetadata = JsonSerializer.Deserialize<SeedMetadata>(jsonDocString) ?? seedMetadata;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Console.WriteLine(ex.Message);
-                    seedMetadata = JsonSerializer.Deserialize<LegacySeedMetadata>(jsonDocString)?.ToSeedMetadata() ?? seedMetadata;
+                    try
+                    {
+                        seedMetadata = JsonSerializer.Deserialize<LegacySeedMetadata>(jsonDocString)?.ToSeedMetadata() ?? seedMetadata;
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
                 }
 
-                if (seedMetadata.Version == string.Empty)
-                {
-                    return false;
-                }
+                if (seedMetadata.Version == string.Empty) { return false; }
 
                 if (seedMetadata.Verification.Count == 0)
                 {
@@ -108,7 +111,6 @@ public class MetadataReader
             {
                 var line = string.Join(string.Empty, characters);
                 results.Add(line);
-                AnsiConsole.WriteLine(line);
                 characters = [];
             }
             else if (b == 0x02)
@@ -151,7 +153,7 @@ public class MetadataReader
             reader.BaseStream.Seek(EndScreenTextStart, SeekOrigin.Begin);
             var prefixCount = 0;
             var bytes = Enumerable.Empty<byte>();
-            while (prefixCount < 7)
+            while (prefixCount < 7 && bytes.Count() < 512)
             {
                 var nextByte = reader.ReadByte();
                 if (nextByte == 0x02) prefixCount++;
