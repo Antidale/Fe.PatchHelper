@@ -13,13 +13,11 @@ public class MetadataReader
     const long ChecksumStart = 0x007FDE;
     const int MetadataDocLengthByteSize = 4;
 
-
     public static bool TryGetSeedMetadata(string filePath, out SeedMetadata seedMetadata)
     {
         seedMetadata = new();
 
         if (!filePath.IsVaildFeFile()) return false;
-
 
         try
         {
@@ -37,6 +35,7 @@ public class MetadataReader
                 {
                     flags = pathSegments.Skip(1).First();
                 }
+
                 seedMetadata = new SeedMetadata
                 {
                     Version = version,
@@ -123,9 +122,7 @@ public class MetadataReader
                 }
 
                 characters = [];
-
             }
-
             else if (b == 0x09)
             {
                 characters.Add("\n");
@@ -164,9 +161,9 @@ public class MetadataReader
             var byteArray = bytes.ToArray();
             return ParseEndScreenBytes(byteArray);
         }
-        catch (Exception ex2)
+        catch (Exception ex)
         {
-            AnsiConsole.WriteException(ex2);
+            AnsiConsole.WriteException(ex);
             return (string.Empty, string.Empty);
         }
     }

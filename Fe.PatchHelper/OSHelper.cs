@@ -19,7 +19,7 @@ public static class OSHelper
         return flipsName;
     }
 
-    public static string GetConfiguredFlipsPath(string? userProvidedPath) =>
+    public static string GetFlipsPath(string? userProvidedPath) =>
         string.IsNullOrEmpty(userProvidedPath)
             ? GetConfiguredFlipsPath()
             : userProvidedPath;
@@ -28,6 +28,18 @@ public static class OSHelper
     {
         var flipsName = GetExpectedFlipsName();
         var configuredPath = Environment.GetEnvironmentVariable("FLIPS_PATH");
-        return Path.Join(configuredPath, flipsName);
+        if (string.IsNullOrWhiteSpace(configuredPath))
+        {
+            throw new ArgumentException("Must provide or configure the path to flips");
+        }
+
+        return File.Exists(configuredPath)
+            ? configuredPath
+            : Path.Join(configuredPath, flipsName);
     }
+
+    public static string GetRomPath(string? userProvidedPath) =>
+        string.IsNullOrEmpty(userProvidedPath)
+            ? Environment.GetEnvironmentVariable("FE_BASE_ROM_PATH") ?? string.Empty
+            : userProvidedPath;
 }
