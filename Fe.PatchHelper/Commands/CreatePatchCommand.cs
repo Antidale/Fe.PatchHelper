@@ -30,23 +30,37 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
 
     public async override Task<int> ExecuteAsync(CommandContext context, [NotNull] Settings settings)
     {
-        var romFolder = Environment.GetEnvironmentVariable("FE_ROM_PATH");
 
-        var flipsPath = OSHelper.GetConfiguredFlipsPath(settings.FlipsPath);
+        var romPath = OSHelper.GetRomPath(settings.BaseRomPath);
+        var flipsPath = OSHelper.GetFlipsPath(settings.FlipsPath);
 
         if (!flipsPath.IsValidFile())
         {
-            AnsiConsole.WriteLine("Must point to a valid Flips file");
+            AnsiConsole.WriteLine($"Must point to a valid Flips file: {flipsPath} was provided");
             return -1;
         }
-
-        var romPath = string.IsNullOrEmpty(settings.BaseRomPath)
-            ? Path.Join(romFolder, "ff4.rom.smc")
-            : settings.FlipsPath;
 
         if (string.IsNullOrEmpty(romPath) || !romPath.IsValidFile())
         {
             AnsiConsole.WriteLine("Must point to a valid base ROM file");
+            return -1;
+        }
+
+
+
+        if (File.Exists(settings.FilePath))
+        {
+            //process single file
+        }
+        else if (Directory.Exists(settings.FilePath))
+        {
+            //get the files and process them, handle getting subirectories, too.
+            //probalby also either set up a progress bar, or note file completion in some way
+            //also note any files that were not FE files?
+        }
+        else
+        {
+            AnsiConsole.WriteLine("Must provide a path to a specific FE rom, or a directory containing them");
             return -1;
         }
 
