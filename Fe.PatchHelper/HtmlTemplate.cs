@@ -26,10 +26,7 @@ public class HtmlTemplate
             <div class="label">Check:</div>
             <div>
                 <div id="checksum-container">
-                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{metadata.Verification.First()}}.png" alt="${{metadata.Verification.First()}}" title="${{metadata.Verification.First()}}">
-                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{metadata.Verification.Skip(1).First()}}.png" alt="${{metadata.Verification.Skip(1).First()}}" title="${{metadata.Verification.Skip(1).First()}}">
-                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{metadata.Verification.Skip(2).First()}}.png" alt="${{metadata.Verification.Skip(2).First()}}" title="${{metadata.Verification.Skip(2).First()}}">
-                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{metadata.Verification.Skip(3).First()}}.png" alt="${{metadata.Verification.Skip(3).First()}}" title="${{metadata.Verification.Skip(3).First()}}">
+                    {{Verification(metadata.Verification)}}
                 </div>
             </div>
         </div>
@@ -380,4 +377,13 @@ public class HtmlTemplate
 </body>
 </html>
 """;
+    private static string Verification(List<string> iconNames) => iconNames.Count == 0
+        ? "Unknown"
+        : $$"""
+                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{iconNames.First()}}.png" alt="${{iconNames.First()}}" title="${{iconNames.First()}}">
+                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{iconNames.Skip(1).First()}}.png" alt="${{iconNames.Skip(1).First()}}" title="${{iconNames.Skip(1).First()}}">
+                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{iconNames.Skip(2).First()}}.png" alt="${{iconNames.Skip(2).First()}}" title="${{iconNames.Skip(2).First()}}">
+                    <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{iconNames.Skip(3).First()}}.png" alt="${{iconNames.Skip(3).First()}}" title="${{iconNames.Skip(3).First()}}">
+        """;
+
 }
