@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using Spectre.Console;
 
 namespace Fe.PatchHelper;
 
@@ -19,19 +20,18 @@ public static class OSHelper
         return flipsName;
     }
 
-    public static string GetFlipsPath(string? userProvidedPath) =>
-        string.IsNullOrEmpty(userProvidedPath)
-            ? GetConfiguredFlipsPath()
-            : userProvidedPath;
+    public static string GetFlipsPath(string? userProvidedPath)
+    {
+        return userProvidedPath is null
+                    ? GetConfiguredFlipsPath()
+                    : userProvidedPath;
+    }
+
 
     private static string GetConfiguredFlipsPath()
     {
         var flipsName = GetExpectedFlipsName();
         var configuredPath = Environment.GetEnvironmentVariable("FLIPS_PATH");
-        if (string.IsNullOrWhiteSpace(configuredPath))
-        {
-            throw new ArgumentException("Must provide or configure the path to flips");
-        }
 
         return File.Exists(configuredPath)
             ? configuredPath
@@ -39,7 +39,7 @@ public static class OSHelper
     }
 
     public static string GetRomPath(string? userProvidedPath) =>
-        string.IsNullOrEmpty(userProvidedPath)
+        userProvidedPath is null
             ? Environment.GetEnvironmentVariable("FE_BASE_ROM_PATH") ?? string.Empty
             : userProvidedPath;
 }

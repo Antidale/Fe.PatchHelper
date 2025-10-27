@@ -118,7 +118,7 @@ public class MetadataReader
                 i++;
                 // text.py adds in some ~ based on the value of the next byte, but we don't really care about that and can just skip to the next value in the byte array
                 var line = string.Join(string.Empty, characters);
-                if (line != "\n")
+                if (line != Environment.NewLine)
                 {
                     results.Add(line);
                 }
@@ -127,7 +127,7 @@ public class MetadataReader
             }
             else if (b == 0x09)
             {
-                characters.Add("\n");
+                characters.Add(Environment.NewLine);
             }
             else if (Data.RawCharacterMap.ContainsKey(b))
             {
@@ -163,9 +163,8 @@ public class MetadataReader
             var byteArray = bytes.ToArray();
             return ParseEndScreenBytes(byteArray);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            AnsiConsole.WriteException(ex);
             return (string.Empty, string.Empty);
         }
     }
