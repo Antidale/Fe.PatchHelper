@@ -47,11 +47,12 @@ public class HtmlTemplate
             This seed can be shared by saving and distributing <a href=""
                 download="FF4FE.{{metadata.BinaryFlags}}.{{metadata.Seed}}.html">this HTML file</a>, or by
             sharing this <a href="javascript:;" onclick="downloadBpsPatch();">BPS patch</a>.
+            {{VersionHelp(metadata.Version)}}
         </div>
     </div>
 
     <div id="credit">
-        BPS patch creation and application code by <a href="https://github.com/Alcaro" target="_blank">Alcaro</a>. This patch page has been recreated from the pached FE ROM.
+        BPS patch creation and application code by <a href="https://github.com/Alcaro" target="_blank">Alcaro</a>. This patch page has been recreated from the patched FE ROM.
     </div>
 
     <script>
@@ -385,5 +386,26 @@ public class HtmlTemplate
                     <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{iconNames.Skip(2).First()}}.png" alt="${{iconNames.Skip(2).First()}}" title="${{iconNames.Skip(2).First()}}">
                     <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{iconNames.Skip(3).First()}}.png" alt="${{iconNames.Skip(3).First()}}" title="${{iconNames.Skip(3).First()}}">
         """;
+
+    private static string VersionHelp(string version)
+    {
+        return version switch
+        {
+            var v2 when v2.StartsWith("v0.2") => """
+            <br />
+            <a href="https://wiki.ff4fe.com/doku.php?id=flags_v2" target="_blank">V2 Flags Breakdown</a>
+            """,
+            var v1 when v1.StartsWith("v0.1") => """
+            <br />
+            <a href="https://wiki.ff4fe.com/doku.php?id=flags_v2" target="_blank">V1 Flags Breakdown</a>
+            """,
+            var v3 when v3.StartsWith("v0.3") => """
+            <br />
+            <a href="https://wiki.ff4fe.com/doku.php?id=flags_v3" target="_blank">V3 Flags Breakdown</a>
+            """,
+            _ => string.Empty
+        };
+
+    }
 
 }
