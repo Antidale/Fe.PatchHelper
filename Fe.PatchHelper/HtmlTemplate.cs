@@ -387,25 +387,20 @@ public class HtmlTemplate
                     <img class="checksum-tile" src="https://info.tellah.life/img/checksum-{{iconNames.Skip(3).First()}}.png" alt="${{iconNames.Skip(3).First()}}" title="${{iconNames.Skip(3).First()}}">
         """;
 
-    private static string VersionHelp(string version)
+    private static string VersionHelp(string version) => version switch
     {
-        return version switch
-        {
-            var v2 when v2.StartsWith("v0.2") => """
+        var v2 when v2.StartsWith("v0.2") => """
             <br />
             <a href="https://wiki.ff4fe.com/doku.php?id=flags_v2" target="_blank">V2 Flags Breakdown</a>
             """,
-            var v1 when v1.StartsWith("v0.1") => """
+        var v1 when v1.StartsWith("v0.1") => """
             <br />
             <a href="https://wiki.ff4fe.com/doku.php?id=flags_v2" target="_blank">V1 Flags Breakdown</a>
             """,
-            var v3 when v3.StartsWith("v0.3") => """
+        var v3 when v3.StartsWith("v0.3") => """
             <br />
             <a href="https://wiki.ff4fe.com/doku.php?id=flags_v3" target="_blank">V3 Flags Breakdown</a>
             """,
-            _ => string.Empty
-        };
-
-    }
-
+        _ => string.Empty
+    };
 }
