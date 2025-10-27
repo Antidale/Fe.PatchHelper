@@ -73,6 +73,12 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
                     }
                     filesTask.Increment(progressIncrement);
                 }
+
+                //Handle some rounding cases where we might look stalled at 99%
+                if (!filesTask.IsFinished)
+                {
+                    filesTask.Increment(progressIncrement);
+                }
             });
 
             if (failedFilePaths.Count != 0)
