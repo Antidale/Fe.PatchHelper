@@ -15,7 +15,7 @@ public class GetFileMetadataCommand : Command<GetFileMetadataCommand.Settings>
         public required string FilePath { get; init; }
     }
 
-    public override int Execute(CommandContext context, [NotNull] Settings settings)
+    public override int Execute(CommandContext context, [NotNull] Settings settings, CancellationToken cancellationToken)
     {
         AnsiConsole.WriteLine(MetadataReader.TryGetSeedMetadata(settings.FilePath, out var seedMetadata)
             ? seedMetadata.ToString()
