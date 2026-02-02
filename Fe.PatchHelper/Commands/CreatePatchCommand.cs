@@ -28,7 +28,7 @@ public class CreatePatchCommand : AsyncCommand<CreatePatchCommand.Settings>
         public bool RecursiveSearch { get; set; }
     }
 
-    public async override Task<int> ExecuteAsync(CommandContext context, [NotNull] Settings settings)
+    public async override Task<int> ExecuteAsync(CommandContext context, [NotNull] Settings settings, CancellationToken cancellationToken)
     {
 
         var romPath = OSHelper.GetRomPath(settings.BaseRomPath);
