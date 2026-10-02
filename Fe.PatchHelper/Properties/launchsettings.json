@@ -1,0 +1,8 @@
+{
+    "profiles": {
+        "MyLaunchProfileName": {
+            "commandName": "Project",
+            "commandLineArgs": "metadata /Users/antidale/src/Fe.PatchHelper/FF4FE.V5.Compressed.smc"
+        }
+    }
+}

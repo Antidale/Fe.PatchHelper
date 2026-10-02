@@ -1,5 +1,5 @@
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using Fe.PatchHelper.Converters;
 
 namespace Fe.PatchHelper.Models;
 
@@ -19,6 +19,14 @@ public class SeedMetadata
 
     [JsonPropertyName("verification")]
     public List<string> Verification { get; set; } = [];
+
+    [JsonPropertyName("metadata_addr")]
+    [JsonConverter(typeof(HexStringToUintConverter))]
+    public uint MetadataAddress { get; init; } = 0;
+
+    [JsonPropertyName("metadata_len")]
+    [JsonConverter(typeof(HexStringToUintConverter))]
+    public uint MedataLength { get; init; } = 0;
 
     public string VerificationString => string.Join(", ", Verification);
 
