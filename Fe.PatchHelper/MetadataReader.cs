@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using Fe.PatchHelper.Extensions;
@@ -9,12 +10,14 @@ namespace Fe.PatchHelper;
 public class MetadataReader
 {
     const long MetadataDocLengthStart = 0x1FF000;
+    const long test = 0x1FFD48;
     const long EndScreenTextStart = 0x10d500;
     const long ChecksumStart = 0x007FDE;
     const int MetadataDocLengthByteSize = 4;
 
     public static bool TryGetSeedMetadata(string filePath, out SeedMetadata seedMetadata)
     {
+
         seedMetadata = new();
 
         if (!filePath.IsVaildFeFile()) return false;
@@ -55,9 +58,28 @@ public class MetadataReader
                 try
                 {
                     seedMetadata = JsonSerializer.Deserialize<SeedMetadata>(jsonDocString) ?? seedMetadata;
+
+                    AnsiConsole.WriteLine($"Metadata info: {seedMetadata.MetadataAddress}, {seedMetadata.MedataLength}");
+
+                    if (seedMetadata.MetadataAddress > 0)
+                    {
+                        br.BaseStream.Seek(seedMetadata.MetadataAddress, SeekOrigin.Begin);
+
+                        var compressedDoc = br.ReadBytes((int)seedMetadata.MedataLength);
+                        var payload = Encoding.UTF8.GetString(GetUncompressedPayload(compressedDoc));
+                        var decompressedMetadata = JsonSerializer.Deserialize<SeedMetadata>(payload) ?? new();
+                        seedMetadata = new SeedMetadata
+                        {
+                            BinaryFlags = decompressedMetadata.BinaryFlags,
+                            Flags = decompressedMetadata.Flags,
+                            Seed = seedMetadata.Seed,
+                            Version = seedMetadata.Version,
+                        };
+                    }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    AnsiConsole.WriteException(ex);
                     try
                     {
                         seedMetadata = JsonSerializer.Deserialize<LegacySeedMetadata>(jsonDocString)?.ToSeedMetadata() ?? seedMetadata;
@@ -167,5 +189,16 @@ public class MetadataReader
         {
             return (string.Empty, string.Empty);
         }
+    }
+
+    private static byte[] GetUncompressedPayload(byte[] data)
+    {
+        using var outputStream = new MemoryStream();
+        using var inputStream = new MemoryStream(data);
+        using var zipInputStream = new ZipArchive(inputStream, ZipArchiveMode.Read);
+        using var entryStream = zipInputStream.Entries[0].Open();
+        entryStream.CopyTo(outputStream);
+
+        return outputStream.ToArray();
     }
 }
